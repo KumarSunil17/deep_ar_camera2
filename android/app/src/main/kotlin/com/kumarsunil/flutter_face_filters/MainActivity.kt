@@ -87,18 +87,18 @@ class MainActivity : AppCompatActivity(), AREventListener {
             // open your camera here
             val surface = Surface(surfaceTexture)
             Log.e("height_width", "$height $width .....")
-            deepAR.setRenderSurface(surface, width, height)
+//            deepAR.setRenderSurface(surface, width, height)
             openCamera()
         }
 
         override fun onSurfaceTextureSizeChanged(surfaceTexture: SurfaceTexture?, width: Int, height: Int) {
             // Transform you image captured size according to the surface width and height
             val surface = Surface(surfaceTexture)
-            deepAR.setRenderSurface(surface, width, height)
+//            deepAR.setRenderSurface(surface, width, height)
         }
 
         override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
-            deepAR.setRenderSurface(null, 0, 0)
+//            deepAR.setRenderSurface(null, 0, 0)
             return false
         }
 
@@ -161,38 +161,38 @@ class MainActivity : AppCompatActivity(), AREventListener {
             texture.setDefaultBufferSize(width, height)
             val surface = Surface(texture)
 
-            val imageReader = ImageReader.newInstance(width, height, ImageFormat.YUV_420_888, 2)
-            imageReader.setOnImageAvailableListener({
-                Log.e("byte_data","ready")
-                val img: Image = it.acquireLatestImage()
-                Log.e(TAG,img.format.toString())
-
-                val buffers: Array<ByteBuffer?> = arrayOfNulls(2)
-                for (i in 0 until 2) {
-                    buffers[i] = ByteBuffer.allocateDirect(width * height * 3 / 2)
-                    buffers[i]?.order(ByteOrder.nativeOrder())
-                    buffers[i]?.position(0)
-                    val buffer = ByteArray(width * height * 3 / 2)
-//                    val buffer = yuvImageToByteArray(img)
-                    Log.e("byte_data", buffer.contentToString());
-                    buffers[currentBuffer]!!.put(buffer)
-                    buffers[currentBuffer]!!.position(0)
-
-                    deepAR.receiveFrame(buffers[currentBuffer], img.width, img.height, sensorOrientation!!, isFrontFacing)
-
-                    currentBuffer = (currentBuffer + 1) % 2
-                }
-//                deepAR.receiveFrame(img.planes[0].buffer, width, height, sensorOrientation!!, isFrontFacing)
-                    img.close()
-
-
-            }, null)
+//            val imageReader = ImageReader.newInstance(width, height, ImageFormat.YUV_420_888, 2)
+//            imageReader.setOnImageAvailableListener({
+//                Log.e("byte_data","ready")
+//                val img: Image = it.acquireLatestImage()
+//                Log.e(TAG,img.format.toString())
+//
+//                val buffers: Array<ByteBuffer?> = arrayOfNulls(2)
+//                for (i in 0 until 2) {
+//                    buffers[i] = ByteBuffer.allocateDirect(width * height * 3 / 2)
+//                    buffers[i]?.order(ByteOrder.nativeOrder())
+//                    buffers[i]?.position(0)
+//                    val buffer = ByteArray(width * height * 3 / 2)
+////                    val buffer = yuvImageToByteArray(img)
+//                    Log.e("byte_data", buffer.contentToString());
+//                    buffers[currentBuffer]!!.put(buffer)
+//                    buffers[currentBuffer]!!.position(0)
+//
+//                    deepAR.receiveFrame(buffers[currentBuffer], img.width, img.height, sensorOrientation!!, isFrontFacing)
+//
+//                    currentBuffer = (currentBuffer + 1) % 2
+//                }
+////                deepAR.receiveFrame(img.planes[0].buffer, width, height, sensorOrientation!!, isFrontFacing)
+//                    img.close()
+//
+//
+//            }, null)
             captureRequestBuilder = cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_RECORD)
-            captureRequestBuilder!!.addTarget(imageReader.surface)
+            captureRequestBuilder!!.addTarget(surface)
 
             val surfaceList: MutableList<Surface> = ArrayList()
-//            surfaceList.add(surface)
-            surfaceList.add(imageReader.surface)
+            surfaceList.add(surface)
+//            surfaceList.add(imageReader.surface)
             cameraDevice!!.createCaptureSession(surfaceList, object : CameraCaptureSession.StateCallback() {
                 override fun onConfigured(cameraCaptureSession: CameraCaptureSession) {
                     //The camera is already closed
